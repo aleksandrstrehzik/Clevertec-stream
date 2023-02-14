@@ -5,6 +5,7 @@ import by.strezhik.util.Util;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -44,6 +45,7 @@ public class Main {
     public static final String NUMBER_IN_VIN = "59";
     public static final double CONVERSION_TO_TON = 0.001;
     public static final double TRANSPORTATION_COST_PER_TON = 7.14;
+    public static final String ENGINEER = "Engineer";
 
     public static void main(String[] args) throws IOException {
         task1();
@@ -61,6 +63,7 @@ public class Main {
         task13();
         task14();
         task15();
+        task16();
     }
 
     private static void task1() throws IOException {
@@ -278,6 +281,29 @@ public class Main {
         return car.getVin().contains(NUMBER_IN_VIN);
     }
 
+    private static void task16() throws IOException {
+        List<Person> people = Util.getPersons();
+        boolean engineer = people.stream()
+                .filter(person -> person.getId() % 2 == 0)
+                .filter(person -> person.getId() % 8 != 0)
+                .filter(person -> Main.IsSumOfDigits7(person.getId()))
+                .collect(Collectors.groupingBy(Person::getRecruitmentGroup,
+                        Collectors.mapping(Person::getOccupation, Collectors.toList())))
+                .entrySet().stream()
+                .skip(1)
+                .limit(1)
+                .flatMap(entry -> entry.getValue().stream())
+                .anyMatch(string -> string.contains(ENGINEER));
+        System.out.println(engineer);
+    }
+
+    private static boolean IsSumOfDigits7(int i) {
+        Integer integer = i;
+        String[] split = integer.toString().split("");
+        return Arrays.stream(split)
+                .mapToInt(Integer::parseInt)
+                .sum() != 11;
+    }
 
     private static class PersonComparator implements Comparator<Person> {
 
@@ -303,5 +329,4 @@ public class Main {
             return 0;
         }
     }
-
 }
